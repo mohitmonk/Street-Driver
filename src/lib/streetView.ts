@@ -1,0 +1,4 @@
+export type StreetLink={pano:string;heading:number;description?:string};
+export function createStreetView(container:HTMLElement, position:{lat:number;lng:number}, heading:number){return new google.maps.StreetViewPanorama(container,{position,pov:{heading,pitch:0},zoom:1,visible:true,clickToGo:false,linksControl:false,panControl:false,zoomControl:false,addressControl:false,showRoadLabels:false,fullscreenControl:false});}
+export function getLinks(p:google.maps.StreetViewPanorama):StreetLink[]{return (p.getLinks()||[]).filter((x):x is google.maps.StreetViewLink & {pano:string;heading:number}=>Boolean(x.pano)&&typeof x.heading==='number').map(x=>({pano:x.pano!,heading:x.heading!,description:x.description}));}
+export function chooseForwardLink(links:StreetLink[],heading:number){if(!links.length)return null;const delta=(a:number,b:number)=>Math.abs(((a-b+540)%360)-180);return links.reduce((best,l)=>delta(l.heading,heading)<delta(best.heading,heading)?l:best,links[0]);}
